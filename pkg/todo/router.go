@@ -71,8 +71,8 @@ func (r *router) GetTodoByID(ctx *gin.Context) {
 	}
 	todo, err := r.service.GetTodoByID(ctx, id)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "failed to get todo list",
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"message": "todo not found",
 		})
 		return
 	}
