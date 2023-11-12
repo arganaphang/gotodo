@@ -7,14 +7,18 @@
 - [Watchexec CLI](https://github.com/watchexec/watchexec)
 - [jq CLI](https://jqlang.github.io/jq/)
 - [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/)
+- [K6](https://k6.io)
 
 ## Todos
 
 - [x] Migrations files
 - [x] Google Wire DI
-- [ ] ENV Config file
-- [ ] Pagination
-- [ ] Validator
+- [x] ENV Config file
+- [x] Pagination
+- [ ] Sorting
+- [x] Validator
+- [x] K6 Load Test
+- [ ] CLI
 - [ ] Unit Test
 - [ ] Integration Test
 - [ ] CI/CD

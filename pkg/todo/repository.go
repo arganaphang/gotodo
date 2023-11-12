@@ -23,12 +23,13 @@ func (r *repository) CreateTodo(ctx context.Context, todo domain.Todo) (*domain.
 	return &todo, nil
 }
 
-func (r *repository) GetTodos(ctx context.Context) ([]domain.Todo, error) {
+func (r *repository) GetTodos(ctx context.Context, limit, offset int) ([]domain.Todo, int, error) {
 	todos := []domain.Todo{}
-	if err := r.db.NewSelect().Model(&todos).Scan(ctx); err != nil {
-		return nil, err
+	count, err := r.db.NewSelect().Model(&todos).Limit(limit).Offset(offset).Order("created_at desc").ScanAndCount(ctx)
+	if err != nil {
+		return nil, 0, err
 	}
-	return todos, nil
+	return todos, count, nil
 }
 
 func (r *repository) GetTodoByID(ctx context.Context, id uuid.UUID) (*domain.Todo, error) {
@@ -40,13 +41,21 @@ func (r *repository) GetTodoByID(ctx context.Context, id uuid.UUID) (*domain.Tod
 }
 
 func (r *repository) UpdateTodoByID(ctx context.Context, todo domain.Todo) (*domain.Todo, error) {
-	if _, err := r.db.NewUpdate().Model(&todo).Column("title", "is_done").Where("id = ?", todo.ID).Exec(ctx); err != nil {
+	if _, err := r.GetTodoByID(ctx, todo.ID); err != nil {
+		return nil, err
+	}
+
+	if _, err := r.db.NewUpdate().Model(&todo).Column("title", "is_done").Where("id = ?", todo.ID).Returning("*").Exec(ctx); err != nil {
 		return nil, err
 	}
 	return &todo, nil
 }
 
 func (r *repository) DeleteTodoByID(ctx context.Context, id uuid.UUID) error {
+	if _, err := r.GetTodoByID(ctx, id); err != nil {
+		return err
+	}
+
 	_, err := r.db.NewDelete().Model((*domain.Todo)(nil)).Where("id = ?", id).Exec(ctx)
 	return err
 }

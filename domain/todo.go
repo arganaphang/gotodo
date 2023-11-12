@@ -18,7 +18,7 @@ type Todo struct {
 
 type TodoService interface {
 	CreateTodo(ctx context.Context, todo Todo) (*Todo, error)
-	GetTodos(ctx context.Context) ([]Todo, error)
+	GetTodos(ctx context.Context, limit, offset int) ([]Todo, int, error)
 	GetTodoByID(ctx context.Context, id uuid.UUID) (*Todo, error)
 	UpdateTodoByID(ctx context.Context, todo Todo) (*Todo, error)
 	DeleteTodoByID(ctx context.Context, id uuid.UUID) error
@@ -26,7 +26,7 @@ type TodoService interface {
 
 type TodoRepository interface {
 	CreateTodo(ctx context.Context, todo Todo) (*Todo, error)
-	GetTodos(ctx context.Context) ([]Todo, error)
+	GetTodos(ctx context.Context, limit, offset int) ([]Todo, int, error)
 	GetTodoByID(ctx context.Context, id uuid.UUID) (*Todo, error)
 	UpdateTodoByID(ctx context.Context, todo Todo) (*Todo, error)
 	DeleteTodoByID(ctx context.Context, id uuid.UUID) error

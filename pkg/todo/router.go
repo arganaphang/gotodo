@@ -2,11 +2,13 @@ package todo
 
 import (
 	"application/domain"
+	"application/helper/pagination"
+	"database/sql"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"go.uber.org/zap"
 )
 
 type router struct {
@@ -26,14 +28,26 @@ func NewRouter(app *gin.Engine, service domain.TodoService) {
 }
 
 func (r *router) CreateTodo(ctx *gin.Context) {
+	// ? Serialize
 	body := domain.Todo{}
 	if err := ctx.ShouldBind(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed to serialize request body",
 		})
+		return
 	}
-	todo, err := r.service.CreateTodo(ctx, body)
 
+	// ? Validate
+	// ? Validate Empty
+	if len(strings.Trim(body.Title, " ")) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "title can't be empty",
+		})
+		return
+	}
+
+	// ? Do~
+	todo, err := r.service.CreateTodo(ctx, body)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed to create todo",
@@ -47,17 +61,26 @@ func (r *router) CreateTodo(ctx *gin.Context) {
 }
 
 func (r *router) GetTodos(ctx *gin.Context) {
-	todos, err := r.service.GetTodos(ctx)
+	paginate, err := pagination.Transform(ctx.Request.URL.Query())
 	if err != nil {
-		zap.L().Info(err.Error())
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "pagination invalid",
+		})
+		return
+	}
+
+	todos, count, err := r.service.GetTodos(ctx, paginate.Limit, paginate.Offset)
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed to get todo list",
 		})
 		return
 	}
-	ctx.JSON(http.StatusCreated, gin.H{
+	paginate.Finish(count)
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "get todo list success",
 		"data":    todos,
+		"meta":    &paginate,
 	})
 }
 
@@ -71,12 +94,18 @@ func (r *router) GetTodoByID(ctx *gin.Context) {
 	}
 	todo, err := r.service.GetTodoByID(ctx, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"message": "todo not found",
+			})
+			return
+		}
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"message": "todo not found",
+			"message": "failed to get todo by id",
 		})
 		return
 	}
-	ctx.JSON(http.StatusCreated, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "get todo by id success",
 		"data":    todo,
 	})
@@ -98,16 +127,31 @@ func (r *router) UpdateTodoByID(ctx *gin.Context) {
 		})
 	}
 
+	// ? Validate
+	// ? Validate Empty
+	if len(strings.Trim(body.Title, " ")) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "title can't be empty",
+		})
+		return
+	}
+
 	body.ID = id
 
 	todo, err := r.service.UpdateTodoByID(ctx, body)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"message": "todo not found",
+			})
+			return
+		}
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed to update todo",
 		})
 		return
 	}
-	ctx.JSON(http.StatusCreated, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "todo updated",
 		"data":    todo,
 	})
@@ -129,7 +173,7 @@ func (r *router) DeleteTodoByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "todo deleted",
 	})
 }

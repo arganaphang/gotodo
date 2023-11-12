@@ -23,3 +23,7 @@ migrate-create NAME:
 # migrate-up -> up migration
 migrate-up:
 	migrate -path ./migrations -database postgres://postgres:postgres@localhost:5432/todos?sslmode=disable up
+
+# seed: seed 100 todo
+seed:
+	k6 run ./scripts/seed.js

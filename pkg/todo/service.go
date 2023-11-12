@@ -19,8 +19,8 @@ func (s *service) CreateTodo(ctx context.Context, todo domain.Todo) (*domain.Tod
 	return s.repo.CreateTodo(ctx, todo)
 }
 
-func (s *service) GetTodos(ctx context.Context) ([]domain.Todo, error) {
-	return s.repo.GetTodos(ctx)
+func (s *service) GetTodos(ctx context.Context, limit, offset int) ([]domain.Todo, int, error) {
+	return s.repo.GetTodos(ctx, limit, offset)
 }
 
 func (s *service) GetTodoByID(ctx context.Context, id uuid.UUID) (*domain.Todo, error) {
