@@ -1,7 +1,7 @@
 package main
 
 import (
-	"application/services/todo"
+	"application/pkg/todo"
 	"database/sql"
 	"fmt"
 	"net/http"
