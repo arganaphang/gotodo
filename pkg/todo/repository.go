@@ -17,7 +17,7 @@ func NewRepository(db *bun.DB) domain.TodoRepository {
 }
 
 func (r *repository) CreateTodo(ctx context.Context, todo domain.Todo) (*domain.Todo, error) {
-	if _, err := r.db.NewInsert().Model(&todo).Exec(ctx); err != nil {
+	if _, err := r.db.NewInsert().Model(&todo).Column("title").Returning("*").Exec(ctx); err != nil {
 		return nil, err
 	}
 	return &todo, nil
@@ -40,7 +40,7 @@ func (r *repository) GetTodoByID(ctx context.Context, id uuid.UUID) (*domain.Tod
 }
 
 func (r *repository) UpdateTodoByID(ctx context.Context, todo domain.Todo) (*domain.Todo, error) {
-	if _, err := r.db.NewUpdate().Model(todo).Column("title", "is_done").Where("id = ?", todo.ID).Exec(ctx); err != nil {
+	if _, err := r.db.NewUpdate().Model(&todo).Column("title", "is_done").Where("id = ?", todo.ID).Exec(ctx); err != nil {
 		return nil, err
 	}
 	return &todo, nil
