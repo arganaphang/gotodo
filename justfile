@@ -15,3 +15,11 @@ dev:
 # health -> Hit Health Check Endpoint
 health:
 	curl -s http://localhost:8000/healthz | jq
+
+# migrate-create -> create migration
+migrate-create NAME:
+	migrate create -ext sql -dir ./migrations -seq {{NAME}}
+
+# migrate-up -> up migration
+migrate-up:
+	migrate -path ./migrations -database postgres://postgres:postgres@localhost:5432/todos?sslmode=disable up

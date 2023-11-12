@@ -7,3 +7,11 @@
 - [Watchexec CLI](https://github.com/watchexec/watchexec)
 - [jq CLI](https://jqlang.github.io/jq/)
 - [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/)
+
+## Todos
+
+- [x] Migrations files
+- [ ] Google Wire DI
+- [ ] Unit Test
+- [ ] Integration Test
+- [ ] CI/CD
