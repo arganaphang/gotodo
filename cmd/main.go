@@ -42,9 +42,8 @@ func main() {
 		})
 	})
 
-	todoRepo := todo.NewRepository(db)
-	todoSvc := todo.NewService(todoRepo)
-	todo.NewRouter(app, todoSvc)
+	svc := Initialize(db)
+	todo.NewRouter(app, svc.TodoService)
 
 	app.Run(fmt.Sprintf("0.0.0.0:%s", PORT))
 }

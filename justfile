@@ -2,7 +2,7 @@ set dotenv-load
 
 # build -> build application
 build:
-	go build ./cmd/main.go
+	go build -o main ./cmd
 
 # run -> application
 run:

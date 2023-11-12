@@ -11,7 +11,10 @@
 ## Todos
 
 - [x] Migrations files
-- [ ] Google Wire DI
+- [x] Google Wire DI
+- [ ] ENV Config file
+- [ ] Pagination
+- [ ] Validator
 - [ ] Unit Test
 - [ ] Integration Test
 - [ ] CI/CD

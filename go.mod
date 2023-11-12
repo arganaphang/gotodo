@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/uuid v1.3.1
+	github.com/google/wire v0.5.0
 	github.com/uptrace/bun v1.1.16
 	github.com/uptrace/bun/dialect/pgdialect v1.1.16
 	github.com/uptrace/bun/driver/pgdriver v1.1.16
